@@ -12,14 +12,24 @@ module Franky
       path = @request.path_info
 
       routes = self.class.routes
+
+      # THIS IS WHAT WE WOULD LIKE TO DO:
+
+      # routes[verb].each do |route|
+      #
+      #  if route[:pattern].match(path)
+      #     write key-value pairs in route to params
+      #     return instance_eval(&route[:block])
+      #   end
+      # end
+      #
+      # [404, {}, ['404']]
+
       match = nil
 
       routes[verb].each do |route|
         break match = route if route[:path] == path
-        # if match(route[:pattern], path)
-        #   match = route
-        #   write key-value pairs to params
-        #   break
+
       end
 
       if match
@@ -59,6 +69,11 @@ module Franky
 
         @routes[verb] << signature
         signature
+      end
+
+      def parse(path)
+        # convert the given path to a regex
+        # retrieve keys from path (want to use them later)
       end
 
       def call(env)
