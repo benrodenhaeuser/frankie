@@ -15,13 +15,19 @@ module Franky
       match = nil
 
       routes[verb].each do |route|
-        break match = route if route[:path] = path
+        break match = route if route[:path] == path
+        # if match(route[:pattern], path)
+        #   match = route
+        #   write key-value pairs to params
+        #   break
       end
-      result = instance_eval(&match[:block])
 
-      [200, {}, [result]]
-      # ^ FIX: this is the happy path.
-      # ^ what kind of responses do we want to take into account?
+      if match
+        result = instance_eval(&match[:block])
+        [200, {}, [result]]
+      else
+        [404, {}, ['404']]
+      end
     end
 
     def erb(template)
@@ -47,6 +53,10 @@ module Franky
         @routes[verb] ||= []
 
         signature = { path: path, block: block }
+
+        # pattern, keys = parse(path)
+        # signature = { pattern: pattern, keys: keys, block: block }
+
         @routes[verb] << signature
         signature
       end
