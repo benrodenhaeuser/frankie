@@ -13,31 +13,15 @@ module Franky
 
       routes = self.class.routes
 
-      # THIS IS WHAT WE WOULD LIKE TO DO:
-
-      # routes[verb].each do |route|
-      #
-      #  if route[:pattern].match(path)
-      #     write key-value pairs in route to params
-      #     return instance_eval(&route[:block])
-      #   end
-      # end
-      #
-      # [404, {}, ['404']]
-
-      match = nil
-
       routes[verb].each do |route|
-        break match = route if route[:path] == path
-
+        match = route[:pattern].match(path)
+        if match
+          params.merge!(route[:keys].zip(match.captures).to_h)
+          return [200, {}, [instance_eval(&route[:block])]]
+        end
       end
 
-      if match
-        result = instance_eval(&match[:block])
-        [200, {}, [result]]
-      else
-        [404, {}, ['404']]
-      end
+      [404, {}, ['<h1>404</h1>']]
     end
 
     def erb(template)
@@ -53,27 +37,29 @@ module Franky
         route('GET', path, &block)
       end
 
-      def post(path, &block)
-        route('POST', path, &block)
-      end
-
-      # TODO: parametrized routes
       def route(verb, path, &block)
         @routes ||= {}
         @routes[verb] ||= []
-
-        signature = { path: path, block: block }
-
-        # pattern, keys = parse(path)
-        # signature = { pattern: pattern, keys: keys, block: block }
-
+        pattern, keys = parse(path)
+        signature = { pattern: pattern, keys: keys, block: block }
         @routes[verb] << signature
         signature
       end
 
       def parse(path)
-        # convert the given path to a regex
-        # retrieve keys from path (want to use them later)
+        segments = path.split('/')
+        keys = []
+
+        segments.map! do |segment|
+          if segment.start_with?(':')
+            keys << segment[1..-1]
+            "(.+)"
+          else
+            segment
+          end
+        end
+
+        [/\A#{segments.join('/')}\z/, keys]
       end
 
       def call(env)
@@ -90,7 +76,6 @@ module Franky
     end
 
     delegate(:get)
-    delegate(:post)
   end
 
   at_exit { Rack::Handler::WEBrick.run Franky::Application, Port: 9292 }
