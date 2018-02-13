@@ -2,10 +2,12 @@ require 'rack'
 
 module Franky
   class Application
-    @routes = {}
+    attr_reader :params
 
     def call(env)
       @request = Rack::Request.new(env)
+      @params = @request.params
+
       verb = @request.request_method
       path = @request.path_info
 
@@ -16,9 +18,16 @@ module Franky
         break match = route if route[:path] = path
       end
       result = instance_eval(&match[:block])
-      # ^ Sinatra uses invoke { route_eval } here, and route_eval uses class_eval (I think) rather than instance_eval. Not sure what is going on.
 
-      [200, {}, [result]] # we assume that result is a string here
+      [200, {}, [result]]
+      # ^ FIX: this is the happy path.
+      # ^ what kind of responses do we want to take into account?
+    end
+
+    def erb(template)
+      path = "./views/#{template}.erb"
+      content = File.read(path)
+      ERB.new(content).result(binding)
     end
 
     class << self
@@ -28,6 +37,11 @@ module Franky
         route('GET', path, &block)
       end
 
+      def post(path, &block)
+        route('POST', path, &block)
+      end
+
+      # TODO: parametrized routes
       def route(verb, path, &block)
         @routes ||= {}
         @routes[verb] ||= []
@@ -51,21 +65,12 @@ module Franky
     end
 
     delegate(:get)
+    delegate(:post)
   end
 
   at_exit { Rack::Handler::WEBrick.run Franky::Application, Port: 9292 }
 end
 
-extend Franky::Delegator # make delegated methods available to main
-
-
-# FEATURES
-# - can store get routes (and other types are easy to add now)
-# - can respond to HTTP requests
-# - uses Sinatra syntax for top-level methods
-
-# MISSING
-# - route parameters
-# - call should be an instance method
-# - templates
-# - one instance per request
+extend Franky::Delegator
+# ^ extend adds Franky::Delegator to main, rather than to Object
+# ^ (which would be undesirable)
