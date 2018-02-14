@@ -1,6 +1,6 @@
 require 'rack'
 
-module Franky
+module Frankie
   class Application
     attr_reader :params
 
@@ -53,7 +53,7 @@ module Franky
         segments.map! do |segment|
           if segment.start_with?(':')
             keys << segment[1..-1]
-            "(.+)"
+            "([^\/]+)"
           else
             segment
           end
@@ -78,9 +78,9 @@ module Franky
     delegate(:get)
   end
 
-  at_exit { Rack::Handler::WEBrick.run Franky::Application, Port: 9292 }
+  at_exit { Rack::Handler::WEBrick.run Frankie::Application, Port: 9292 } unless ENV['RACK_ENV'] == 'test'
 end
 
-extend Franky::Delegator
+extend Frankie::Delegator
 # ^ extend adds Franky::Delegator to main, rather than to Object
-# ^ (which would be undesirable)
+# ^ (which would happen if we included it)
