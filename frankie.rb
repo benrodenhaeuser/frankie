@@ -59,16 +59,15 @@ module Frankie
       @request.params
     end
 
-    # TODO: what's going on exactly?
+    # TODO: what's going on here exactly?
     def invoke
       res = catch(:halt) { yield }
-      res = [res] if Fixnum === res or String === res
-      if Array === res and Fixnum === res.first
+      res = [res] if Integer === res or String === res
+      if Array === res and Integer === res.first
         res = res.dup
         @response.status = res.shift
         @response.body = res.pop
-        # ^ if res was something like [404], then res is empty now
-        @response.headers.merge!(res) # ??
+        @response.headers.merge!(*res) # why is the splat needed?
       elsif res.respond_to? :each
         @response.body = res
       end
@@ -107,6 +106,7 @@ module Frankie
     end
 
     # TODO: I don't think this is how Sinatra does it
+    # it's also not working anymore :-)
     def not_found
       halt [404, {}, ['<h1>404</h1>']]
     end
