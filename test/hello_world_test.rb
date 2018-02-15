@@ -3,7 +3,7 @@ ENV["RACK_ENV"] = "test"
 require "minitest/autorun"
 require "rack/test"
 
-require_relative "../app"
+require_relative "../hello_world"
 
 class AppTest < Minitest::Test
   include Rack::Test::Methods

@@ -1,4 +1,4 @@
-require_relative 'frankie'
+require_relative './lib/frankie'
 
 get "/" do
   "hello world"
@@ -6,7 +6,7 @@ end
 
 get "/frankie_says_hello" do
   @name = 'Frankie'
-  erb :hello
+  erb(:hello)
 end
 
 get "/segment/:some_id/segment/:some_other_id" do
