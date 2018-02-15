@@ -3,12 +3,8 @@ require 'rack'
 module Frankie
   class Application
     class << self
-      def get(path, &block)
-        route('GET', path, &block)
-      end
-
-      def post(path, &block)
-        route('POST', path, &block)
+      def routes
+        @routes
       end
 
       def route(verb, path, &block)
@@ -20,8 +16,12 @@ module Frankie
         signature
       end
 
-      def routes
-        @routes
+      def get(path, &block)
+        route('GET', path, &block)
+      end
+
+      def post(path, &block)
+        route('POST', path, &block)
       end
 
       def compile(path)
@@ -36,8 +36,8 @@ module Frankie
             segment
           end
         end
-        pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
 
+        pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
         [pattern, keys]
       end
 
@@ -49,15 +49,30 @@ module Frankie
     def call(env)
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
-      @params = @request.params
 
-      route!
+      invoke { route! }
 
       @response.finish
     end
 
     def params
-      @params
+      @request.params
+    end
+
+    # TODO: what's going on exactly?
+    def invoke
+      res = catch(:halt) { yield }
+      res = [res] if Fixnum === res or String === res
+      if Array === res and Fixnum === res.first
+        res = res.dup
+        @response.status = res.shift
+        @response.body = res.pop
+        # ^ if res was something like [404], then res is empty now
+        @response.headers.merge!(res) # ??
+      elsif res.respond_to? :each
+        @response.body = res
+      end
+      nil
     end
 
     def route!
@@ -69,17 +84,31 @@ module Frankie
         match = route[:pattern].match(path)
         if match
           params.merge!(route[:keys].zip(match.captures).to_h)
-          @response.body = [instance_eval(&route[:block])]
-          return
+          halt instance_eval(&route[:block])
         end
       end
 
-      not_found!
+      not_found
     end
 
-    def not_found!
-      @response.status = 404
-      @response.body = ['<h1>404</h1>']
+    def redirect(uri)
+      if params['HTTP_VERSION'] == 'HTTP/1.1' && params["REQUEST_METHOD"] != 'GET'
+        @response.status = 303
+      else
+        @response.status = 302
+      end
+
+      @response.headers['Location'] = uri
+      halt
+    end
+
+    def halt(response = nil)
+      throw :halt, response
+    end
+
+    # TODO: I don't think this is how Sinatra does it
+    def not_found
+      halt [404, {}, ['<h1>404</h1>']]
     end
 
     def erb(template)

@@ -62,7 +62,7 @@ def invoke
 end
 
 def dispatch!
-  invoke do # dispatch! calls invoke again. why is that?
+  invoke do # calls invoke again. why is that?
     static! if settings.static? && (request.get? || request.head?)
     filter! :before
     route! # HERE
