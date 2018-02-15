@@ -1,7 +1,11 @@
 require './frankie'
 require "tilt/erubis"
 
-get "/some_route" do
+get "/" do
+  "hello world"
+end
+
+get "/frankie_says_hello" do
   @name = 'Frankie'
   erb :hello
 end
@@ -11,5 +15,13 @@ get "/segment/:some_id/" do
 end
 
 get "/segment/:some_id/segment/:some_other_id" do
-  "captured #{params['some_id']} and #{params['some_other_id']}"
+  "Frankie has captured #{params['some_id']} and #{params['some_other_id']}."
 end
+
+post "/some_route" do
+  redirect "/"
+end
+
+puts Frankie::Application.routes
+
+# "/" results in empty route

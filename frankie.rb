@@ -5,14 +5,18 @@ module Frankie
     attr_reader :params
 
     def call(env)
-      @request = Rack::Request.new(env)
-      @params = @request.params
+      @request = Rack::Request.new(env) # Sinatra has a custom Request class
+      @params = @request.params # Sinatra makes an "indifferent hash"
+      # Sinatra also creates a response object
 
       verb = @request.request_method
       path = @request.path_info
 
       routes = self.class.routes
 
+      # this is our whole routing logic so far:
+      # how does sinatra do it? it all starts with invoke { dispatch! }
+      # which happens in the call! method
       routes[verb].each do |route|
         match = route[:pattern].match(path)
         if match
@@ -22,6 +26,9 @@ module Frankie
       end
 
       [404, {}, ['<h1>404</h1>']]
+
+      # at the end, Sinatra's `call` returns `@response.finish`, which produces
+      # a Rack-compliant array from the response object.
     end
 
     def erb(template)
@@ -37,17 +44,22 @@ module Frankie
         route('GET', path, &block)
       end
 
+      def post(path, &block)
+        route('POST', path, &block)
+      end
+
+      # does not work for "/"
       def route(verb, path, &block)
         @routes ||= {}
         @routes[verb] ||= []
-        pattern, keys = parse(path)
+        pattern, keys = compile(path)
         signature = { pattern: pattern, keys: keys, block: block }
         @routes[verb] << signature
         signature
       end
 
-      def parse(path)
-        segments = path.split('/')
+      def compile(path)
+        segments = path.split('/', -1)
         keys = []
 
         segments.map! do |segment|
@@ -59,6 +71,7 @@ module Frankie
           end
         end
 
+        # use Regexp.compile instead.
         [/\A#{segments.join('/')}\z/, keys]
       end
 
@@ -75,10 +88,12 @@ module Frankie
       end
     end
 
-    delegate(:get)
+    delegate(:get); delegate(:post)
   end
 
-  at_exit { Rack::Handler::WEBrick.run Frankie::Application, Port: 9292 } unless ENV['RACK_ENV'] == 'test'
+  unless ENV['RACK_ENV'] == 'test'
+    at_exit { Rack::Handler::WEBrick.run Frankie::Application, Port: 4567 }
+  end
 end
 
 extend Frankie::Delegator
