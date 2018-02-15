@@ -10,10 +10,6 @@ get "/frankie_says_hello" do
   erb :hello
 end
 
-get "/segment/:some_id/" do
-  "captured #{params['some_id']}"
-end
-
 get "/segment/:some_id/segment/:some_other_id" do
   "Frankie has captured #{params['some_id']} and #{params['some_other_id']}."
 end
