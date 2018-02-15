@@ -59,7 +59,6 @@ module Frankie
       @request.params
     end
 
-    # TODO: what's going on here exactly?
     def invoke
       res = catch(:halt) { yield }
       res = [res] if Integer === res or String === res
@@ -106,13 +105,11 @@ module Frankie
     end
 
     # TODO: I don't think this is how Sinatra does it
-    # it's also not working anymore :-)
     def not_found
       halt [404, {}, ['<h1>404</h1>']]
     end
 
-    def erb(template)
-      path = "./views/#{template}.erb"
+    def erb(template, path = "./views/#{template}.erb")
       content = File.read(path)
       ERB.new(content).result(binding)
     end

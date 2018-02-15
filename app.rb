@@ -1,5 +1,4 @@
-require_relative './frankie'
-require "tilt/erubis"
+require_relative 'frankie'
 
 get "/" do
   "hello world"
@@ -17,4 +16,8 @@ end
 get "/something" do
   redirect "/"
   puts "This will never be printed"
+end
+
+post "/snippet" do
+  redirect "/frankie_says_hello"
 end
