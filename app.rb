@@ -1,4 +1,4 @@
-require './frankie'
+require_relative './frankie'
 require "tilt/erubis"
 
 get "/" do
@@ -14,10 +14,8 @@ get "/segment/:some_id/segment/:some_other_id" do
   "Frankie has captured #{params['some_id']} and #{params['some_other_id']}."
 end
 
-post "/some_route" do
+post "/add_todo" do
+  @string = params[:submitted_string]
+  # store the string in some file?
   redirect "/"
 end
-
-puts Frankie::Application.routes
-
-# "/" results in empty route
