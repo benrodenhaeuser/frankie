@@ -27,7 +27,7 @@ module Frankie
       def compile(path)
         segments = path.split('/', -1)
         keys = []
-        
+
         segments.map! do |segment|
           if segment.start_with?(':')
             keys << segment[1..-1]
@@ -74,6 +74,10 @@ module Frankie
         end
       end
 
+      not_found!
+    end
+
+    def not_found!
       @response.status = 404
       @response.body = ['<h1>404</h1>']
     end
