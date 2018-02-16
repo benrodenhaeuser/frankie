@@ -26,12 +26,12 @@ module Frankie
 
     def invoke
       res = catch(:halt) { yield }
-      res = [res] if Integer === res or String === res
-      if Array === res and Integer === res.first
+      res = [res] if Integer === res || String === res
+      if Array === res && Integer === res.first
         res = res.dup
         @response.status = res.shift
         @response.body = res.pop
-        @response.headers.merge!(*res) # why is the splat needed?
+        @response.headers.merge!(*res)
       elsif res.respond_to? :each
         @response.body = res
       end
@@ -44,7 +44,7 @@ module Frankie
 
     def dispatch!
       route!
-      not_found # Sinatra does error handling here.
+      not_found
     end
 
     def route!
