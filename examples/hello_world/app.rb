@@ -1,4 +1,4 @@
-require_relative './lib/frankie'
+require_relative '../../frankie'
 
 get "/" do
   "hello world"
