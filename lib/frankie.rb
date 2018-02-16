@@ -1,56 +1,21 @@
 require 'rack'
 
 module Frankie
-  class Application
-    class << self
-      def routes
-        @routes
-      end
-
-      def route(verb, path, &block)
-        @routes ||= {}
-        @routes[verb] ||= []
-        pattern, keys = compile(path)
-        signature = { pattern: pattern, keys: keys, block: block }
-        @routes[verb] << signature
-        signature
-      end
-
-      def get(path, &block)
-        route('GET', path, &block)
-      end
-
-      def post(path, &block)
-        route('POST', path, &block)
-      end
-
-      def compile(path)
-        segments = path.split('/', -1)
-        keys = []
-
-        segments.map! do |segment|
-          if segment.start_with?(':')
-            keys << segment[1..-1]
-            "([^\/]+)"
-          else
-            segment
-          end
-        end
-
-        pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
-        [pattern, keys]
-      end
-
-      def call(env)
-        new.call(env)
-      end
+  module Templates
+    def erb(template, path = "./views/#{template}.erb")
+      content = File.read(path)
+      ERB.new(content).result(binding)
     end
+  end
+
+  class Application
+    include Templates
 
     def call(env)
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
 
-      invoke { route! }
+      invoke { dispatch! }
 
       @response.finish
     end
@@ -73,45 +38,89 @@ module Frankie
       nil
     end
 
+    def halt(response = nil)
+      throw :halt, response
+    end
+
+    def dispatch!
+      route!
+      not_found # Sinatra does error handling here.
+    end
+
     def route!
       routes = self.class.routes
-      verb = @request.request_method
-      path = @request.path_info
 
-      routes[verb].each do |route|
-        match = route[:pattern].match(path)
-        if match
-          params.merge!(route[:keys].zip(match.captures).to_h)
-          halt instance_eval(&route[:block])
+      if routes
+        verb = @request.request_method
+        path = @request.path_info
+
+        routes[verb].each do |route|
+          match = route[:pattern].match(path)
+          if match
+            values = match.captures.to_a
+            params.merge!(route[:keys].zip(values).to_h)
+            halt instance_eval(&route[:block])
+          end
         end
       end
+    end
 
-      not_found
+    def not_found
+      halt [404, {}, ['<h1>404</h1>']]
     end
 
     def redirect(uri)
-      if params['HTTP_VERSION'] == 'HTTP/1.1' && params["REQUEST_METHOD"] != 'GET'
-        @response.status = 303
-      else
+      if @request.request_method == 'GET'
         @response.status = 302
+      else
+        @response.status = 303
       end
 
       @response.headers['Location'] = uri
       halt
     end
 
-    def halt(response = nil)
-      throw :halt, response
-    end
+    class << self
+      def routes
+        @routes ||= {}
+      end
 
-    # TODO: I don't think this is how Sinatra does it
-    def not_found
-      halt [404, {}, ['<h1>404</h1>']]
-    end
+      def get(path, &block)
+        route('GET', path, &block)
+      end
 
-    def erb(template, path = "./views/#{template}.erb")
-      content = File.read(path)
-      ERB.new(content).result(binding)
+      def post(path, &block)
+        route('POST', path, &block)
+      end
+
+      def route(verb, path, &block)
+        routes[verb] ||= []
+        pattern, keys = compile(path)
+        signature = { pattern: pattern, keys: keys, block: block }
+        routes[verb] << signature
+        signature
+      end
+
+      def compile(path)
+        segments = path.split('/', -1)
+        keys = []
+
+        segments.map! do |segment|
+          if segment.start_with?(':')
+            keys << segment[1..-1]
+            "([^\/]+)"
+          else
+            segment
+          end
+        end
+
+        pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
+        [pattern, keys]
+      end
+
+      def call(env)
+        new.call(env)
+      end
     end
   end
 
