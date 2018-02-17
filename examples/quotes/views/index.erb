@@ -1,0 +1,15 @@
+<body style="padding: 20px">
+  <div style="width: 300px">
+    <ul>
+      <% (1...@quotes.size).each do |index| %>
+      <li>
+        <em>
+          <%= @quotes[index]['author'] %> famously said:
+        </em>
+        <%= @quotes[index]['quote'] %>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+  <a href="/quotes/new">Add a new quote</a>
+</body>

@@ -11,7 +11,7 @@ module Frankie
   class Application
     include Templates
 
-    def call(env)
+    def call!(env)
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
 
@@ -22,6 +22,10 @@ module Frankie
 
     def params
       @request.params
+    end
+
+    def headers
+      @response.headers
     end
 
     def invoke
@@ -49,9 +53,9 @@ module Frankie
 
     def route!
       routes = self.class.routes
+      verb = @request.request_method
 
-      if routes
-        verb = @request.request_method
+      if routes[verb]
         path = @request.path_info
 
         routes[verb].each do |route|
@@ -119,7 +123,7 @@ module Frankie
       end
 
       def call(env)
-        new.call(env)
+        new.call!(env)
       end
     end
   end
