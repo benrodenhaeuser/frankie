@@ -139,6 +139,15 @@ module Frankie
       def call(env)
         new.call!(env)
       end
+
+      alias new! new
+
+      def new
+        instance = new!
+        # now we can do additional stuff, like set up middleware
+      end
+
+
     end
   end
 
@@ -149,12 +158,12 @@ module Frankie
       end
     end
 
-    delegate(:get); delegate(:post)
+    delegate(:get); delegate(:post); delegate(:use)
   end
 
-  # unless ENV['RACK_ENV'] == 'test'
-    # at_exit { Rack::Handler::WEBrick.run Frankie::Application }
-  # end
+  unless ENV['RACK_ENV'] == 'test'
+    at_exit { Rack::Handler::WEBrick.run Frankie::Application }
+  end
 end
 
 extend Frankie::Delegator
