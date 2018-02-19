@@ -8,24 +8,24 @@ module Frankie
     end
   end
 
+  class Response < Rack::Response
+    def initialize
+      super
+      headers['Content-Type'] ||= 'text/html'
+    end
+  end
+
   class Application
     include Templates
 
     def call!(env)
+      @env = env
       @request = Rack::Request.new(env)
-      @response = Rack::Response.new
+      @response = Response.new
 
       invoke { dispatch! }
 
       @response.finish
-    end
-
-    def params
-      @request.params
-    end
-
-    def headers
-      @response.headers
     end
 
     def invoke
@@ -34,8 +34,10 @@ module Frankie
       if Array === res && Integer === res.first
         res = res.dup
         @response.status = res.shift
-        @response.body = res.pop
-        @response.headers.merge!(*res)
+        unless res.empty?
+          @response.body = res.pop
+          @response.headers.merge!(*res)
+        end
       elsif res.respond_to? :each
         @response.body = res
       end
@@ -74,7 +76,7 @@ module Frankie
     end
 
     def redirect(uri)
-      if @request.request_method == 'GET'
+      if @request.get?
         @response.status = 302
       else
         @response.status = 303
@@ -82,6 +84,18 @@ module Frankie
 
       @response.headers['Location'] = uri
       halt
+    end
+
+    def params
+      @request.params
+    end
+
+    def headers
+      @response.headers
+    end
+
+    def session
+      @request.session
     end
 
     class << self
@@ -138,9 +152,9 @@ module Frankie
     delegate(:get); delegate(:post)
   end
 
-  unless ENV['RACK_ENV'] == 'test'
-    at_exit { Rack::Handler::WEBrick.run Frankie::Application, Port: 4567 }
-  end
+  # unless ENV['RACK_ENV'] == 'test'
+    # at_exit { Rack::Handler::WEBrick.run Frankie::Application }
+  # end
 end
 
 extend Frankie::Delegator

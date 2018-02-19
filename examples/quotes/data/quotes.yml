@@ -1,5 +1,5 @@
 ---
-next_id: 12
+next_id: 16
 1:
   author: Confuzius
   quote: What I hear, I forget. What I see, I remember. What I do, I understand.
@@ -8,7 +8,8 @@ next_id: 12
   quote: In the long run, the sword is always beaten by the spirit.
 3:
   author: Viktor Fraenkl
-  quote: Between stimulus and response is a space. In that space is our freedom to choose our response. In our response lies our growth, and our freedom.
+  quote: Between stimulus and response is a space. In that space is our freedom to
+    choose our response. In our response lies our growth, and our freedom.
 4:
   author: Beckenbauer
   quote: Schau mer mal
@@ -33,3 +34,15 @@ next_id: 12
 11:
   author: some guy
   quote: something
+12:
+  author: Tom
+  quote: Let's all it a day
+13:
+  author: Ben
+  quote: Hi
+14:
+  author: Tom
+  quote: "wha\r\n"
+15:
+  author: Ben
+  quote: quote

@@ -8,24 +8,34 @@ end
 # show list of quotes
 get "/quotes" do
   @quotes = YAML.load(File.read("./data/quotes.yml"))
-  headers["Content-Type"] = "text/html" # shouldn't this be done by frankie?
   erb :index
 end
 
 # form for adding a new quote
 get "/quotes/new" do
-  headers["Content-Type"] = "text/html" # shouldn't this be done by frankie?
   erb :new_quote
+end
+
+def insert(author, quote, quotes)
+  next_id = quotes['next_id']
+  quotes[next_id] = { "author" => author, "quote" => quote }
+  quotes['next_id'] += 1
 end
 
 # update list of quotes
 post "/quotes" do
-  author = params['author']
-  quote = params['quote']
+  author, quote = params['author'], params['quote']
   quotes = YAML.load(File.read("./data/quotes.yml"))
-  next_id = quotes['next_id']
-  quotes[next_id] = { "author" => author, "quote" => quote }
-  quotes['next_id'] += 1
+  insert(author, quote, quotes)
   File.open("./data/quotes.yml","w") { |file| file.write(quotes.to_yaml) }
   redirect "/quotes"
+end
+
+get "/set_value" do
+  session[:msg] = 'new message'
+  session[:msg]
+end
+
+get "/get_value" do
+  session[:msg]
 end
