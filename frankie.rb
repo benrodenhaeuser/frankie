@@ -172,7 +172,8 @@ module Frankie
 
   class Wrapper
     def initialize(stack, instance)
-      @stack, @instance = stack, instance
+      @stack = stack
+      @instance = instance
     end
 
     def call(env)
@@ -187,7 +188,9 @@ module Frankie
       end
     end
 
-    delegate(:get); delegate(:post); delegate(:use)
+    delegate(:get)
+    delegate(:post)
+    delegate(:use)
   end
 
   unless ENV['RACK_ENV'] == 'test'
