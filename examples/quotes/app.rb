@@ -1,7 +1,8 @@
 require_relative '../../frankie'
+require_relative './middleware'
 require 'yaml'
 
-# use Rack::Session::Cookie # TODO
+use Rack::Session::Cookie, :key => 'rack.session', :secret => "secret"
 
 get "/" do
   redirect "/quotes"
