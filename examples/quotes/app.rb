@@ -30,12 +30,3 @@ post "/quotes" do
   session[:message] = 'The quote has been added.'
   redirect "/quotes"
 end
-
-get "/set_value" do
-  session[:msg] = 'new message'
-  session[:msg]
-end
-
-get "/get_value" do
-  session[:msg]
-end
