@@ -60,17 +60,15 @@ module Frankie
       routes = self.class.routes
       verb = @request.request_method
 
-      if routes[verb]
-        path = @request.path_info
+      return unless routes[verb]
 
-        routes[verb].each do |route|
-          match = route[:pattern].match(path)
-          if match
-            values = match.captures.to_a
-            params.merge!(route[:keys].zip(values).to_h)
-            halt instance_eval(&route[:block])
-          end
-        end
+      path = @request.path_info
+      routes[verb].each do |route|
+        match = route[:pattern].match(path)
+        next unless match
+        values = match.captures.to_a
+        params.merge!(route[:keys].zip(values).to_h)
+        halt instance_eval(&route[:block])
       end
     end
 
@@ -79,12 +77,12 @@ module Frankie
     end
 
     def redirect(uri)
-      if @request.get?
-        @response.status = 302
-      else
-        @response.status = 303
-      end
-
+      @response.status =
+        if @request.get?
+          302
+        else
+          303
+        end
       @response.headers['Location'] = uri
       halt
     end
