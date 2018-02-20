@@ -1,4 +1,10 @@
 <body style="padding: 20px">
+  <% if session[:message] %>
+    <div style="display: inline; background-color: yellow">
+      <%= session.delete(:message) %>
+    </div>
+  <% end %>
+
   <div style="width: 300px">
     <ul>
       <% (1...@quotes.size).each do |index| %>

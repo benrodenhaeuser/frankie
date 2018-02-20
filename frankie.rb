@@ -18,8 +18,11 @@ module Frankie
   class Application
     include Templates
 
+    def call(env)
+      dup.call!(env)
+    end
+
     def call!(env)
-      @env = env
       @request = Rack::Request.new(env)
       @response = Response.new
 
@@ -136,25 +139,53 @@ module Frankie
         [pattern, keys]
       end
 
+      def prototype
+        @prototype ||= new
+      end
+
       def call(env)
-        new.call!(env)
+        prototype.call(env)
       end
 
       alias new! new
 
       def new
         instance = new!
-        # now we can do additional stuff, like set up middleware
+        Wrapper.new(build(instance).to_app, instance)
       end
 
+      def build(app)
+        builder = Rack::Builder.new
 
+        (@middleware || []).each do |mw, args|
+          builder.use(mw, *args)
+        end
+
+        builder.run app
+        builder
+      end
+
+      def use(mw, *args)
+        @prototype = nil
+        (@middleware ||= []) << [mw, args]
+      end
+    end
+  end
+
+  class Wrapper
+    def initialize(stack, instance)
+      @stack, @instance = stack, instance
+    end
+
+    def call(env)
+      @stack.call(env)
     end
   end
 
   module Delegator
-    def self.delegate(method)
-      define_method(method) do |path, &block|
-        Application.send(method, path, &block)
+    def self.delegate(method_name)
+      define_method(method_name) do |*args, &block|
+        Application.send(method_name, *args, &block)
       end
     end
 
