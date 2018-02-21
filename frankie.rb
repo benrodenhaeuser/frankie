@@ -149,35 +149,22 @@ module Frankie
 
       def new
         instance = new!
-        Wrapper.new(build(instance).to_app, instance)
+        build(instance).to_app
       end
 
       def build(app)
         builder = Rack::Builder.new
-
-        (@middleware || []).each do |mw, args|
-          builder.use(mw, *args)
+        if @middleware
+          @middleware.each { |middleware, args| builder.use(middleware, *args) }
         end
-
         builder.run app
         builder
       end
 
-      def use(mw, *args)
+      def use(middleware, *args)
         @prototype = nil
-        (@middleware ||= []) << [mw, args]
+        (@middleware ||= []) << [middleware, args]
       end
-    end
-  end
-
-  class Wrapper
-    def initialize(stack, instance)
-      @stack = stack
-      @instance = instance
-    end
-
-    def call(env)
-      @stack.call(env)
     end
   end
 
