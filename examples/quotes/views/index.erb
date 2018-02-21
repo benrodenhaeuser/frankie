@@ -5,8 +5,12 @@
     </div>
   <% end %>
 
+  <div>
+    <h1>Quotes</h1>
+  </div>
+
   <div style="width: 300px">
-    <ul>
+    <ol>
       <% (1...@quotes.size).each do |index| %>
       <li>
         <em>
@@ -15,7 +19,7 @@
         <%= @quotes[index]['quote'] %>
       </li>
       <% end %>
-    </ul>
+    </ol>
   </div>
   <a href="/quotes/new">Add a new quote</a>
 </body>
