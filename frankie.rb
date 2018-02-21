@@ -178,11 +178,6 @@ module Frankie
 
       def run!
         Rack::Handler::WEBrick.run Frankie::Application
-
-        # Sinatra:
-        # at_exit { Application.run! if $!.nil? && Application.run? }
-
-        # presumably, the first conjunct handles the case of a server that's running, and the second case whether we want to run a server in the first place (e.g., testing)
       end
     end
   end
@@ -199,11 +194,7 @@ module Frankie
     delegate(:use)
   end
 
-  unless ENV['RACK_ENV'] == 'test'
-    at_exit { Application.run! }
-  end
+  at_exit { Application.run! unless ENV['RACK_ENV'] == 'test' }
 end
-
-
 
 extend Frankie::Delegator
