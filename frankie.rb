@@ -2,13 +2,16 @@ require 'rack'
 
 module Frankie
   module Templates
-    def path_to_templates
-      root = File.expand_path('../views', $0)
+    def path_to_template(app_root, template)
+      template_dir = File.expand_path('../views', app_root)
+      "#{template_dir}/#{template}.erb"
     end
 
     def erb(template)
-      content = File.read("#{path_to_templates}/#{template}.erb")
-      ERB.new(content).result(binding)
+      b = binding
+      root = caller_locations.first.absolute_path
+      content = File.read(path_to_template(root, template))
+      ERB.new(content).result(b)
     end
   end
 
@@ -187,9 +190,12 @@ module Frankie
     delegate(:use)
   end
 
-  unless ENV['RACK_ENV'] == 'test'
-    at_exit { Rack::Handler::WEBrick.run Frankie::Application }
-  end
+  # unless ENV['RACK_ENV'] == 'test'
+  #   at_exit { Rack::Handler::WEBrick.run Frankie::Application }
+  # end
 end
+
+# Sinatra:
+# at_exit { Application.run! if $!.nil? && Application.run? }
 
 extend Frankie::Delegator
