@@ -2,13 +2,12 @@ require 'rack'
 
 module Frankie
   module Templates
-    def default_path
-      root = File.expand_path('..', $0)
-      root + '/views'
+    def path_to_templates
+      root = File.expand_path('../views', $0)
     end
 
-    def erb(template, path = "#{default_path}/#{template}.erb")
-      content = File.read(path)
+    def erb(template)
+      content = File.read("#{path_to_templates}/#{template}.erb")
       ERB.new(content).result(binding)
     end
   end
@@ -159,9 +158,13 @@ module Frankie
 
       def build(app)
         builder = Rack::Builder.new
+
         if @middleware
-          @middleware.each { |middleware, args| builder.use(middleware, *args) }
+          @middleware.each do |middleware, args|
+            builder.use(middleware, *args)
+          end
         end
+
         builder.run app
         builder
       end
