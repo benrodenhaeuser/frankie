@@ -2,7 +2,12 @@ require 'rack'
 
 module Frankie
   module Templates
-    def erb(template, path = "./views/#{template}.erb")
+    def default_path
+      root = File.expand_path('..', $0)
+      root + '/views'
+    end
+
+    def erb(template, path = "#{default_path}/#{template}.erb")
       content = File.read(path)
       ERB.new(content).result(binding)
     end
@@ -162,7 +167,6 @@ module Frankie
       end
 
       def use(middleware, *args)
-        @prototype = nil
         (@middleware ||= []) << [middleware, args]
       end
     end

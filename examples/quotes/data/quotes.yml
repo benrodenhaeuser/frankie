@@ -1,5 +1,5 @@
 ---
-next_id: 6
+next_id: 8
 1:
   author: Confuzius
   quote: What I hear, I forget. What I see, I remember. What I do, I understand.
@@ -16,3 +16,9 @@ next_id: 6
 5:
   author: Benjamin
   quote: Something new
+6:
+  author: Martin
+  quote: tja
+7:
+  author: Markus
+  quote: hm
