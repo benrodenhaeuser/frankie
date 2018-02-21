@@ -1,5 +1,5 @@
 ---
-next_id: 4
+next_id: 6
 1:
   author: Confuzius
   quote: What I hear, I forget. What I see, I remember. What I do, I understand.
@@ -10,3 +10,9 @@ next_id: 4
   author: Viktor Fraenkl
   quote: Between stimulus and response is a space. In that space is our freedom to
     choose our response. In our response lies our growth, and our freedom.
+4:
+  author: Ben
+  quote: hooray!
+5:
+  author: Tom
+  quote: whooops
