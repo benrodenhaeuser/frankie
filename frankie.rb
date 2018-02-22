@@ -66,7 +66,6 @@ module Frankie
     def route!
       routes = self.class.routes
       verb = @request.request_method
-
       return unless routes[verb]
 
       path = @request.path_info
