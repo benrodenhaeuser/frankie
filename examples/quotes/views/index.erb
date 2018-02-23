@@ -16,7 +16,7 @@
         <em>
           <%= @quotes[index]['author'] %> famously said:
         </em>
-        <%= @quotes[index]['quote'] %>
+        <%= @quotes[index]['quote'] %> (<a href="/quotes/<%= index %>">view</a>)
       </li>
       <% end %>
     </ol>

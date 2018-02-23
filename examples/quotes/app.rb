@@ -32,6 +32,13 @@ get "/quotes/new" do
   erb :new_quote
 end
 
+get "/quotes/:id" do
+  quotes = YAML.load(File.read(data_file))
+  @id = params['id'].to_i
+  @quote = quotes[@id]
+  erb :single_quote
+end
+
 post "/quotes" do
   author, quote = params['author'], params['quote']
   quotes = YAML.load(File.read(data_file))
