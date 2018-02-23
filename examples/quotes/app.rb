@@ -34,8 +34,8 @@ end
 
 get "/quotes/:id" do
   quotes = YAML.load(File.read(data_file))
-  @id = params['id'].to_i
-  @quote = quotes[@id]
+  id = params['id'].to_i
+  @quote = quotes[id]
   erb :single_quote
 end
 
