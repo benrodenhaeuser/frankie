@@ -7,7 +7,7 @@ require 'erb'
 require_relative "../app"
 
 class AppTest < Minitest::Test
-  include Rack::Test::Methods
+  include Rack::Test::Methods # this gives us get, post etc
 
   def app
     Frankie::Application

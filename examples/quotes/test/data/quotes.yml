@@ -1,15 +1,19 @@
 ---
-next_id: 5
-1:
-  author: Confuzius
-  quote: What I hear, I forget. What I see, I remember. What I do, I understand.
-2:
-  author: Napoleon
-  quote: In the long run, the sword is always beaten by the spirit.
-3:
-  author: Viktor Fraenkl
-  quote: Between stimulus and response is a space. In that space is our freedom to
-    choose our response. In our response lies our growth, and our freedom.
-4:
-  author: Tom
-  quote: Some nonsense.
+next_id: 6
+data:
+  1:
+    author: Confuzius
+    quote: What I hear, I forget. What I see, I remember. What I do, I understand.
+  2:
+    author: Napoleon
+    quote: In the long run, the sword is always beaten by the spirit.
+  3:
+    author: Viktor Fraenkl
+    quote: Between stimulus and response is a space. In that space is our freedom
+      to choose our response. In our response lies our growth, and our freedom.
+  4:
+    author: Tom
+    quote: Some nonsense.
+  5:
+    author: Tom
+    quote: Some nonsense.

@@ -13,9 +13,13 @@ def data_file
   end
 end
 
+def load_quotes
+  YAML.load(File.read(data_file))['data']
+end
+
 def insert(author, quote, quotes)
   next_id = quotes['next_id']
-  quotes[next_id] = { "author" => author, "quote" => quote }
+  quotes['data'][next_id] = { "author" => author, "quote" => quote }
   quotes['next_id'] += 1
 end
 
@@ -24,7 +28,7 @@ get "/" do
 end
 
 get "/quotes" do
-  @quotes = YAML.load(File.read(data_file))
+  @quotes = load_quotes
   erb :index
 end
 
@@ -33,7 +37,7 @@ get "/quotes/new" do
 end
 
 get "/quotes/:id" do
-  quotes = YAML.load(File.read(data_file))
+  quotes = load_quotes
   id = params['id'].to_i
   @quote = quotes[id]
   erb :single_quote
