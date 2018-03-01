@@ -12,10 +12,10 @@ module BabyFrankie
       end
 
       def get(path, &block)
-        route('GET', path, &block)
+        route('GET', path, block)
       end
 
-      def route(verb, path, &block)
+      def route(verb, path, block)
         routes << { verb: verb, path: path, block: block }
       end
     end
