@@ -11,26 +11,36 @@ module BabyFrankie
         @routes ||= []
       end
 
+      def get(path, &block)
+        route('GET', path, &block)
+      end
+
       def route(verb, path, &block)
-        routes << { verb: verb, path: path, block: block}
+        routes << { verb: verb, path: path, block: block }
       end
     end
 
     def call(env)
-      @verb, @path = env['REQUEST_METHOD'], env['PATH_INFO']
-      @response = { status: 200, headers: {}, body: []}
+      @verb = env['REQUEST_METHOD']
+      @path = env['PATH_INFO']
+      @resp = { status: 200, headers: {}, body: [] }
 
       route!
 
-      [@response[:status], @response[:headers], @response[:body]]
+      [@resp[:status], @resp[:headers], @resp[:body]]
     end
 
     def route!
-      routes = self.class.routes.select { |route| route[:verb] == @verb }
-      match = routes.find { |route| route[:path] == @path }
+      match =
+        self.class.routes
+            .select { |route| route[:verb] == @verb }
+            .find   { |route| route[:path] == @path }
 
-      @response[:status] = 404 unless match
-      @response[:body] = [match[:block].call] if match
+      if match
+        @resp[:body] = [match[:block].call]
+      else
+        @resp[:status] = 404
+      end
     end
   end
 end
