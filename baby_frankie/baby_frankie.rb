@@ -1,7 +1,7 @@
 # baby_frankie.rb
 
-module BabyFrankie
-  class Application
+module Baby
+  class App
     class << self
       def call(env)
         new.call(env)
@@ -31,10 +31,9 @@ module BabyFrankie
     end
 
     def route!
-      match =
-        self.class.routes
-            .select { |route| route[:verb] == @verb }
-            .find   { |route| route[:path] == @path }
+      match = App.routes
+                 .select { |route| route[:verb] == @verb }
+                 .find   { |route| route[:path] == @path }
 
       if match
         @resp[:body] = [match[:block].call]

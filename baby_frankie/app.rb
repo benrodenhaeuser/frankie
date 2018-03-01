@@ -2,4 +2,4 @@
 
 require_relative 'baby_frankie'
 
-BabyFrankie::Application.get('/') { 'hello world' }
+Baby::App.get('/') { 'hello world' }
