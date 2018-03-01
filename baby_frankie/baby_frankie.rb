@@ -27,7 +27,7 @@ module Baby
 
       route!
 
-      [@resp[:status], @resp[:headers], @resp[:body]]
+      @resp.values
     end
 
     def route!
@@ -35,11 +35,7 @@ module Baby
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:path] == @path }
 
-      if match
-        @resp[:body] = [match[:block].call]
-      else
-        @resp[:status] = 404
-      end
+      match ? @resp[:body] = [match[:block].call] : @resp[:status] = 404
     end
   end
 end
