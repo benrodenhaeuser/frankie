@@ -1,5 +1,3 @@
-# baby_frankie.rb
-
 module Baby
   class App
     class << self
@@ -16,18 +14,29 @@ module Baby
       end
 
       def route(verb, path, block)
-        routes << { verb: verb, path: path, block: block }
+        routes << {
+          verb: verb,
+          path: path,
+          block: block
+        }
       end
     end
 
     def call(env)
-      @verb = env['REQUEST_METHOD']
-      @path = env['PATH_INFO']
-      @resp = { status: 200, headers: {}, body: [] }
+      @verb, @path = env['REQUEST_METHOD'], env['PATH_INFO']
+      @response = { status: 200, headers: {}, body: [] }
 
       route!
 
-      @resp.values
+      @response.values
+    end
+
+    def body(string)
+      @response[:body] = [string]
+    end
+
+    def status(code)
+      @response[:status] = code
     end
 
     def route!
@@ -35,7 +44,7 @@ module Baby
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:path] == @path }
 
-      match ? @resp[:body] = [match[:block].call] : @resp[:status] = 404
+      match ? body(match[:block].call) : status(404)
     end
   end
 end
