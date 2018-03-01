@@ -15,15 +15,16 @@ module Baby
 
       def route(verb, path, block)
         routes << {
-          verb: verb,
-          path: path,
+          verb:  verb,
+          path:  path,
           block: block
         }
       end
     end
 
     def call(env)
-      @verb, @path = env['REQUEST_METHOD'], env['PATH_INFO']
+      @verb     = env['REQUEST_METHOD']
+      @path     = env['PATH_INFO']
       @response = { status: 200, headers: {}, body: [] }
 
       route!
