@@ -1,4 +1,4 @@
-# CHANGE from 0.1 to 0.2:
+# CHANGE in 0.2: require erb
 require 'erb'
 
 module Frankie
@@ -6,7 +6,7 @@ module Frankie
     VERSION = 0.2
   end
 
-  # CHANGE from 0.1 to 0.2: new module
+  # CHANGE in 0.2: new module
   module Templates
     def path_to_template(app_root, template)
       template_dir = File.expand_path('../views', app_root)
@@ -69,12 +69,12 @@ module Frankie
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:path] == @path }
 
-      # CHANGE from 0.1 to 0.2: `instance_eval`
+      # CHANGE in 0.2: `instance_eval`
       match ? body(instance_eval(&match[:block])) : status(404)
     end
   end
 
-  # CHANGE from 0.1 to 0.2: new module
+  # CHANGE in 0.2: new module
   module Delegator
     def self.delegate(method_name)
       define_method(method_name) do |*args, &block|
@@ -86,5 +86,5 @@ module Frankie
   end
 end
 
-# CHANGE from 0.1 to 0.2: add `delegate` to main object
+# CHANGE in 0.2: add `delegate` to main object
 extend Frankie::Delegator

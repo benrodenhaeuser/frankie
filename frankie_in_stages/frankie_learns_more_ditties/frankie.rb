@@ -1,4 +1,3 @@
-# CHANGE from 0.1 to 0.2:
 require 'erb'
 
 module Frankie
@@ -6,7 +5,6 @@ module Frankie
     VERSION = 0.3
   end
 
-  # CHANGE from 0.1 to 0.2: new module
   module Templates
     def path_to_template(app_root, template)
       template_dir = File.expand_path('../views', app_root)
@@ -37,7 +35,7 @@ module Frankie
         route('GET', path, block)
       end
 
-      # CHANGE from 0.2 to 0.3: pattern and keys
+      # CHANGE in 0.3: pattern and keys
       def route(verb, path, block)
         pattern, keys = compile(path)
 
@@ -49,7 +47,7 @@ module Frankie
         }
       end
 
-      # CHANGE from 0.2 to 0.3: new method
+      # CHANGE in 0.3: new method
       def compile(path)
         segments = path.split('/', -1)
         keys = []
@@ -68,7 +66,7 @@ module Frankie
       end
     end
 
-    # CHANGE from 0.2 to 0.3: new method
+    # CHANGE in 0.3: new method
     def params
       @params ||= {}
     end
@@ -92,14 +90,13 @@ module Frankie
       @response[:status] = code
     end
 
-    # CHANGE from 0.2 to 0.3: find block: match with pattern
+    # CHANGE in 0.3: find block: match with pattern
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:pattern].match(@path) }
 
-      # CHANGE from 0.1 to 0.2: `instance_eval`
-      # CHANGE from 0.2 to 0.3: process captured groups
+      # CHANGE in 0.3: process captured groups
       if match
         values = match[:pattern].match(@path).captures.to_a
         params.merge!(match[:keys].zip(values).to_h)
@@ -110,7 +107,6 @@ module Frankie
     end
   end
 
-  # CHANGE from 0.1 to 0.2: new module
   module Delegator
     def self.delegate(method_name)
       define_method(method_name) do |*args, &block|
@@ -122,5 +118,4 @@ module Frankie
   end
 end
 
-# CHANGE from 0.1 to 0.2: add `delegate` to main object
 extend Frankie::Delegator
