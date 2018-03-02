@@ -87,13 +87,13 @@ module Frankie
     end
 
     def headers
-      @headers ||= {}
+      @headers ||= { 'Content-Type' => 'text/html' }
     end
 
     def body(string)
       @response[:body] = [string]
     end
-    
+
     # CHANGE in 0.3: find block: match with pattern
     def route!
       match = App.routes

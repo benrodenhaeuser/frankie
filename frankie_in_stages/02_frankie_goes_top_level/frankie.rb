@@ -61,13 +61,13 @@ module Frankie
     end
 
     def headers
-      @headers ||= {}
+      @headers ||= { 'Content-Type' => 'text/html' }
     end
 
     def body(string)
       @response[:body] = [string]
     end
-    
+
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }

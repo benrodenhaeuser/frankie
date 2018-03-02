@@ -86,7 +86,7 @@ module Frankie
     end
 
     def headers
-      @headers ||= {}
+      @headers ||= { 'Content-Type' => 'text/html' }
     end
 
     def status(code)
