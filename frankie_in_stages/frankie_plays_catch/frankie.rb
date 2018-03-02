@@ -99,26 +99,21 @@ module Frankie
     end
 
     # CHANGE: new method in 0.4
-    def halt
-      throw :halt
-    end
-
-    # CHANGE: new method in 0.4
     def redirect(uri)
       code = (@verb == 'GET') ? 302 : 303
       status code
       headers['Location'] = uri
-      halt
+      throw :halt
     end
 
     # CHANGE: new method in 0.4
     def not_found
       status 404
       body "<h1>404 Not Found</h1"
-      halt
+      throw :halt
     end
 
-    # CHANGE from 0.3 to 0.4: not_found case handled separately, use halt
+    # CHANGE from 0.3 to 0.4: not_found case handled separately, use throw
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }
@@ -129,7 +124,7 @@ module Frankie
         params.merge!(match[:keys].zip(values).to_h)
         body(instance_eval(&match[:block]))
         # CHANGE in 0.4: new line
-        halt
+        throw :halt
       end
     end
   end
