@@ -195,7 +195,7 @@ module Frankie
     delegate(:use)
   end
 
-  at_exit { App.run! unless RACK['ENV'] == 'test' }
+  at_exit { App.run! unless ENV["RACK_ENV"] == "test" }
 end
 
 extend Frankie::Delegator
