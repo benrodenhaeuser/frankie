@@ -104,7 +104,6 @@ module Frankie
       dup.call!(env)
     end
 
-    # CHANGE: method changed
     def call!(env)
       @env = env
       @verb     = env['REQUEST_METHOD']
@@ -117,9 +116,8 @@ module Frankie
       @response.values
     end
 
-    # CHANGE: changed this method (TODO: should be like this everywhere)
-    def body(val)
-      @response[:body] = val
+    def body(string)
+      @response[:body] = [string]
     end
 
     def headers
@@ -131,21 +129,19 @@ module Frankie
     end
 
     # CHANGE: new method
-    # TODO: this method is kind of hard to read
     def invoke
-      res = catch(:halt) { yield }
-      res = [res] if Integer === res || String === res
-      if Array === res && Integer === res.first
-        res = res.dup
-        status res.shift
-        unless res.empty?
-          body res.pop
-          headers.merge!(*res)
+      caught = catch(:halt) { yield }
+
+      if caught
+        case caught
+        when Integer then status caught
+        when String then body caught
+        else
+          body *caught.pop
+          status caught.shift
+          headers.merge!(*caught)
         end
-      elsif res.respond_to? :each
-        body res
       end
-      nil
     end
 
     def dispatch!
@@ -160,12 +156,9 @@ module Frankie
       throw :halt
     end
 
-    # CHANGE: changed `body` invocation (TODO: do this everywhere)
-    # TODO: also: body invocation in route! in earlier versions would have to
-    # change
     def not_found
       status 404
-      body ["<h1>404 Not Found</h1"]
+      body "<h1>404 Not Found</h1"
       throw :halt
     end
 

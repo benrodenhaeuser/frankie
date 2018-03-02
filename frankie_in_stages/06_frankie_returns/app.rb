@@ -33,3 +33,7 @@ end
 get '/test_invoke' do
   303
 end
+
+get '/test2_invoke' do
+  [200, {}, ['Hello hello']]
+end
