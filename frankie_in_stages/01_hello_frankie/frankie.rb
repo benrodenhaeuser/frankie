@@ -17,6 +17,10 @@ module Frankie
         route('GET', path, block)
       end
 
+      def post(path, &block)
+        route('POST', path, block)
+      end
+
       def route(verb, path, block)
         routes << {
           verb:  verb,
@@ -35,6 +39,10 @@ module Frankie
       route!
 
       @response.values
+    end
+
+    def params
+      @request.params
     end
 
     def status(code)

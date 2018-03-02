@@ -35,6 +35,10 @@ module Frankie
         route('GET', path, block)
       end
 
+      def post(path, &block)
+        route('POST', path, block)
+      end
+
       def route(verb, path, block)
         pattern, keys = compile(path)
 
@@ -64,10 +68,6 @@ module Frankie
       end
     end
 
-    def params
-      @request.params
-    end
-
     # CHANGE: changed method in 0.4:
     def call(env)
       @request  = Rack::Request.new(env)
@@ -79,6 +79,10 @@ module Frankie
       catch(:halt) { dispatch! }
 
       @response.values
+    end
+
+    def params
+      @request.params
     end
 
     def body(string)

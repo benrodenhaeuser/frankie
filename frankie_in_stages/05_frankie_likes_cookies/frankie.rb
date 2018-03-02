@@ -69,6 +69,10 @@ module Frankie
         route('GET', path, block)
       end
 
+      def post(path, &block)
+        route('POST', path, block)
+      end
+
       def route(verb, path, block)
         pattern, keys = compile(path)
 
@@ -98,15 +102,6 @@ module Frankie
       end
     end
 
-    def params
-      @request.params
-    end
-
-    # CHANGE: new method
-    def session
-      @request.session
-    end
-
     # CHANGE: new method
     def call(env)
       dup.call!(env)
@@ -123,6 +118,15 @@ module Frankie
       catch(:halt) { dispatch! }
 
       @response.values
+    end
+
+    def params
+      @request.params
+    end
+
+    # CHANGE: new method
+    def session
+      @request.session
     end
 
     def body(string)
