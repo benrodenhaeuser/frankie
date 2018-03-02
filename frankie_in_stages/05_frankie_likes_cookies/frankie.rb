@@ -181,6 +181,7 @@ module Frankie
     end
 
     delegate(:get)
+    delegate(:post)
     # CHANGE: new invocation:
     delegate(:use)
   end

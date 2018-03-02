@@ -196,7 +196,6 @@ module Frankie
     end
 
     delegate(:get)
-    # CHANGE
     delegate(:post)
     delegate(:use)
   end

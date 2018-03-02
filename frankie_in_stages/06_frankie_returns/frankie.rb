@@ -187,6 +187,7 @@ module Frankie
     end
 
     delegate(:get)
+    delegate(:post)
     delegate(:use)
   end
 end
