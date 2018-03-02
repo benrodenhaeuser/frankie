@@ -80,9 +80,10 @@ module Frankie
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:path] == @path }
+      return status(404) unless match
 
       # CHANGE in 0.2: `instance_eval`
-      match ? body(instance_eval(&match[:block])) : status(404)
+      body instance_eval(&match[:block])
     end
   end
 

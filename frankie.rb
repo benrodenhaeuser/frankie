@@ -133,16 +133,15 @@ module Frankie
 
     def invoke
       caught = catch(:halt) { yield }
+      return unless caught
 
-      if caught
-        case caught
-        when Integer then status caught
-        when String then body caught
-        else
-          body *caught.pop
-          status caught.shift
-          headers.merge!(*caught)
-        end
+      case caught
+      when Integer then status caught
+      when String then body caught
+      else
+        body(*caught.pop)
+        status caught.shift
+        headers.merge!(*caught)
       end
     end
 
@@ -161,19 +160,18 @@ module Frankie
     end
 
     def not_found
-      halt [404, {}, ["<h1>404 Not Found</h1"]]
+      halt [404, {}, ['<h1>404 Not Found</h1']]
     end
 
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:pattern].match(@path) }
+      return unless match
 
-      if match
-        values = match[:pattern].match(@path).captures.to_a
-        params.merge!(match[:keys].zip(values).to_h)
-        halt instance_eval(&match[:block])
-      end
+      values = match[:pattern].match(@path).captures.to_a
+      params.merge!(match[:keys].zip(values).to_h)
+      halt instance_eval(&match[:block])
     end
   end
 
@@ -189,7 +187,7 @@ module Frankie
     delegate(:use)
   end
 
-  at_exit { App.run! unless ENV["RACK_ENV"] == "test" }
+  at_exit { App.run! unless ENV['RACK_ENV'] == 'test' }
 end
 
 extend Frankie::Delegator

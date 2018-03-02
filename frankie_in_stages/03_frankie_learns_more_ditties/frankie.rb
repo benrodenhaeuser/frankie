@@ -102,15 +102,12 @@ module Frankie
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:pattern].match(@path) }
+      return status(404) unless match
 
       # CHANGE in 0.3: process captured groups
-      if match
-        values = match[:pattern].match(@path).captures.to_a
-        params.merge!(match[:keys].zip(values).to_h)
-        body(instance_eval(&match[:block]))
-      else
-        status(404)
-      end
+      values = match[:pattern].match(@path).captures.to_a
+      params.merge!(match[:keys].zip(values).to_h)
+      body(instance_eval(&match[:block]))
     end
   end
 

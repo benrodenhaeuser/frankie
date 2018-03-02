@@ -121,14 +121,13 @@ module Frankie
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:pattern].match(@path) }
+      return unless match
 
-      if match
-        values = match[:pattern].match(@path).captures.to_a
-        params.merge!(match[:keys].zip(values).to_h)
-        body(instance_eval(&match[:block]))
-        # CHANGE in 0.4: new line
-        throw :halt
-      end
+      values = match[:pattern].match(@path).captures.to_a
+      params.merge!(match[:keys].zip(values).to_h)
+      body(instance_eval(&match[:block]))
+      # CHANGE in 0.4: new line
+      throw :halt
     end
   end
 

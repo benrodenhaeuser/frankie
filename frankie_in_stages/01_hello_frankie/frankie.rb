@@ -63,8 +63,9 @@ module Frankie
       match = App.routes
                  .select { |route| route[:verb] == @verb }
                  .find   { |route| route[:path] == @path }
+      return status(404) unless match
 
-      match ? body(match[:block].call) : status(404)
+      body match[:block].call
     end
   end
 end
