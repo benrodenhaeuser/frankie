@@ -3,7 +3,7 @@
 require_relative 'frankie'
 
 get '/' do
-  'hello world'
+  'frankie says hello.'
 end
 
 get '/ditty' do

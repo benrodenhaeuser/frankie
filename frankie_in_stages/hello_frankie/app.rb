@@ -2,4 +2,4 @@
 
 require_relative 'frankie'
 
-Frankie::App.get('/') { 'hello world' }
+Frankie::App.get('/') { 'frankie says hello.' }

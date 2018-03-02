@@ -1,4 +1,8 @@
 module Frankie
+  module BookKeeping
+    VERSION = 0.1
+  end
+
   class App
     class << self
       def call(env)
