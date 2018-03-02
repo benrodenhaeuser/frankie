@@ -1,5 +1,4 @@
-# CHANGE in 0.2: require erb
-require 'erb'
+require 'rack'
 
 module Frankie
   module BookKeeping

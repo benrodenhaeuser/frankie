@@ -1,3 +1,5 @@
+require 'rack'
+
 module Frankie
   module BookKeeping
     VERSION = 0.1

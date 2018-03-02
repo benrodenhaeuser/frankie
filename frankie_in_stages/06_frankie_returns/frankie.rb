@@ -1,4 +1,4 @@
-require 'erb'
+require 'rack'
 
 module Frankie
   module BookKeeping

@@ -1,4 +1,3 @@
-# CHANGE: require rack
 require 'rack'
 
 module Frankie
