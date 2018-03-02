@@ -1,3 +1,4 @@
+# CHANGE: require rack
 require 'rack'
 
 module Frankie
@@ -63,7 +64,6 @@ module Frankie
         route('GET', path, block)
       end
 
-      # TODO: do this starting in 0.1
       def post(path, &block)
         route('POST', path, block)
       end
@@ -101,14 +101,6 @@ module Frankie
       end
     end
 
-    def params
-      @request.params
-    end
-
-    def session
-      @request.session
-    end
-
     def call(env)
       dup.call!(env)
     end
@@ -122,6 +114,14 @@ module Frankie
       invoke { dispatch! }
 
       @response.values
+    end
+
+    def params
+      @request.params
+    end
+
+    def session
+      @request.session
     end
 
     def body(string)
@@ -191,11 +191,10 @@ module Frankie
     end
 
     delegate(:get)
-    # TODO: do this starting in 0.1
     delegate(:post)
     delegate(:use)
   end
-
+  
   at_exit { App.run! }
 end
 
