@@ -49,21 +49,25 @@ module Frankie
     def call(env)
       @verb     = env['REQUEST_METHOD']
       @path     = env['PATH_INFO']
-      @response = { status: 200, headers: {}, body: [] }
+      @response = { status: 200, headers: headers, body: [] }
 
       route!
 
       @response.values
     end
 
-    def body(string)
-      @response[:body] = [string]
-    end
-
     def status(code)
       @response[:status] = code
     end
 
+    def headers
+      @headers ||= {}
+    end
+
+    def body(string)
+      @response[:body] = [string]
+    end
+    
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }

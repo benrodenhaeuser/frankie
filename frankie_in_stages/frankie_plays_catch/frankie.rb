@@ -73,7 +73,7 @@ module Frankie
       @verb     = env['REQUEST_METHOD']
       @path     = env['PATH_INFO']
 
-      @response = { status: 200, headers: {}, body: [] }
+      @response = { status: 200, headers: headers, body: [] }
 
       # CHANGE: changed line in 0.4:
       catch(:halt) { dispatch! }
