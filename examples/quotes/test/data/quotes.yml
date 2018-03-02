@@ -1,5 +1,5 @@
 ---
-next_id: 6
+next_id: 7
 data:
   1:
     author: Confuzius
@@ -15,5 +15,8 @@ data:
     author: Tom
     quote: Some nonsense.
   5:
+    author: Tom
+    quote: Some nonsense.
+  6:
     author: Tom
     quote: Some nonsense.

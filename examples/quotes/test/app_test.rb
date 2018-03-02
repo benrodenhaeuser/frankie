@@ -10,7 +10,7 @@ class AppTest < Minitest::Test
   include Rack::Test::Methods # this gives us get, post etc
 
   def app
-    Frankie::Application
+    Frankie::App
   end
 
   def test_get_root

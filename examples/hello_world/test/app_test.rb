@@ -9,7 +9,7 @@ class AppTest < Minitest::Test
   include Rack::Test::Methods
 
   def app
-    Frankie::Application
+    Frankie::App
   end
 
   def test_root
