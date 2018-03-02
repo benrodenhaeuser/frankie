@@ -134,9 +134,7 @@ module Frankie
     # TODO: this method is kind of hard to read
     def invoke
       res = catch(:halt) { yield }
-      puts res
       res = [res] if Integer === res || String === res
-      puts res
       if Array === res && Integer === res.first
         res = res.dup
         status res.shift
