@@ -162,19 +162,19 @@ module Frankie
       throw :halt, response
     end
 
-    # CHANGE: use new halt method
+    # CHANGE: use halt method
     def redirect(uri)
       headers['Location'] = uri
       code = (@verb == 'GET') ? 302 : 303
       halt code
     end
 
-    # CHANGE: use new halt method
+    # CHANGE: use halt method
     def not_found
       halt [404, {}, ["<h1>404 Not Found</h1"]]
     end
 
-    # CHANGE: use new halt method
+    # CHANGE: use halt method
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }
