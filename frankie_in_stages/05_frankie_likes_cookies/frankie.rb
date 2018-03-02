@@ -99,12 +99,12 @@ module Frankie
     end
 
     def params
-      @params ||= {}
+      @request.params
     end
 
     # CHANGE: new method
     def session
-      @env['rack.session']
+      @request.session
     end
 
     # CHANGE: new method
@@ -115,9 +115,9 @@ module Frankie
     # CHANGE: this method used to be called `call`
     def call!(env)
       # CHANGE: add new ivar @env
-      @env = env
-      @verb     = env['REQUEST_METHOD']
-      @path     = env['PATH_INFO']
+      @request  = Rack::Request.new(env)
+      @verb     = @request.request_method
+      @path     = @request.path_info
       @response = { status: 200, headers: headers, body: [] }
 
       catch(:halt) { dispatch! }

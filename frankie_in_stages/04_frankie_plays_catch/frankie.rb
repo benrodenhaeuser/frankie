@@ -65,14 +65,14 @@ module Frankie
     end
 
     def params
-      @params ||= {}
+      @request.params
     end
 
     # CHANGE: changed method in 0.4:
     def call(env)
-      @verb     = env['REQUEST_METHOD']
-      @path     = env['PATH_INFO']
-
+      @request  = Rack::Request.new(env)
+      @verb     = @request.request_method
+      @path     = @request.path_info
       @response = { status: 200, headers: headers, body: [] }
 
       # CHANGE: changed line in 0.4:

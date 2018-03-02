@@ -93,11 +93,11 @@ module Frankie
     end
 
     def params
-      @params ||= {}
+      @request.params
     end
 
     def session
-      @env['rack.session']
+      @request.session
     end
 
     def call(env)
@@ -105,9 +105,9 @@ module Frankie
     end
 
     def call!(env)
-      @env = env
-      @verb     = env['REQUEST_METHOD']
-      @path     = env['PATH_INFO']
+      @request  = Rack::Request.new(env)
+      @verb     = @request.request_method
+      @path     = @request.path_info
       @response = { status: 200, headers: headers, body: [] }
 
       # CHANGE: we use invoke now

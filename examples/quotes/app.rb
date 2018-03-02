@@ -45,9 +45,11 @@ end
 
 post "/quotes" do
   author, quote = params['author'], params['quote']
+  puts author # nil
+  puts quote # nil
   quotes = YAML.load(File.read(data_file))
   insert(author, quote, quotes)
   File.open(data_file, "w") { |file| file.write(quotes.to_yaml) }
   session[:message] = 'The quote has been added.'
   redirect "/quotes"
-end
+end 
