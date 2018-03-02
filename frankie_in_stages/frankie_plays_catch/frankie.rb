@@ -113,7 +113,7 @@ module Frankie
       throw :halt
     end
 
-    # CHANGE from 0.3 to 0.4: not_found case handled separately, use throw
+    # CHANGE in 0.4: not_found case handled separately, use throw
     def route!
       match = App.routes
                  .select { |route| route[:verb] == @verb }
