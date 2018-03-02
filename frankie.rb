@@ -1,10 +1,6 @@
 require 'rack'
 
 module Frankie
-  module BookKeeping
-    VERSION = 0.7
-  end
-
   module Templates
     def path_to_template(app_root, template)
       template_dir = File.expand_path('../views', app_root)
