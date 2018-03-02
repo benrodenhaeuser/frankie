@@ -1,5 +1,29 @@
+# CHANGE from 0.1 to 0.2:
+require 'erb'
+
 module Frankie
+  module BookKeeping
+    VERSION = 0.2
+  end
+
+  # CHANGE from 0.1 to 0.2: new module
+  module Templates
+    def path_to_template(app_root, template)
+      template_dir = File.expand_path('../views', app_root)
+      "#{template_dir}/#{template}.erb"
+    end
+
+    def erb(template)
+      b = binding
+      app_root = caller_locations.first.absolute_path
+      content = File.read(path_to_template(app_root, template))
+      ERB.new(content).result(b)
+    end
+  end
+
   class App
+    include Templates
+
     class << self
       def call(env)
         new.call(env)
