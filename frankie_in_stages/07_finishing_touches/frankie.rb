@@ -164,8 +164,7 @@ module Frankie
     # CHANGE: use halt method
     def redirect(uri)
       headers['Location'] = uri
-      code = (@verb == 'GET') ? 302 : 303
-      halt code
+      halt (@verb == 'GET' ? 302 : 303)
     end
 
     # CHANGE: use halt method

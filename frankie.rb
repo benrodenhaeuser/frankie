@@ -1,4 +1,3 @@
-# CHANGE: require rack
 require 'rack'
 
 module Frankie
@@ -162,8 +161,7 @@ module Frankie
 
     def redirect(uri)
       headers['Location'] = uri
-      code = (@verb == 'GET') ? 302 : 303
-      halt code
+      halt (@verb == 'GET' ? 302 : 303)
     end
 
     def not_found

@@ -104,8 +104,7 @@ module Frankie
 
     # CHANGE: new method in 0.4
     def redirect(uri)
-      code = (@verb == 'GET') ? 302 : 303
-      status code
+      status (@verb == 'GET' ? 302 : 303)
       headers['Location'] = uri
       throw :halt
     end
