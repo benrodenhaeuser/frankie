@@ -105,7 +105,7 @@ module Frankie
       return status(404) unless match
 
       # CHANGE in 0.3: process captured groups
-      values = match[:pattern].match(@path).captures.to_a
+      values = match[:pattern].match(@path).captures
       params.merge!(match[:keys].zip(values).to_h)
       body(instance_eval(&match[:block]))
     end

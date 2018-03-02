@@ -123,7 +123,7 @@ module Frankie
                  .find   { |route| route[:pattern].match(@path) }
       return unless match
 
-      values = match[:pattern].match(@path).captures.to_a
+      values = match[:pattern].match(@path).captures
       params.merge!(match[:keys].zip(values).to_h)
       body(instance_eval(&match[:block]))
       # CHANGE in 0.4: new line
