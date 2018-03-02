@@ -189,6 +189,8 @@ module Frankie
     end
 
     delegate(:get)
+    delegate(:post)
+    delegate(:use)
   end
 
   at_exit { Application.run! unless ENV['RACK_ENV'] == 'test' }
