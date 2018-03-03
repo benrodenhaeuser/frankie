@@ -179,7 +179,7 @@ module Frankie
   module Delegator
     def self.delegate(method_name)
       define_method(method_name) do |*args, &block|
-        App.send(method_name, *args, &block)
+        Application.send(method_name, *args, &block)
       end
     end
 
