@@ -74,7 +74,12 @@ module Frankie
       @request  = Rack::Request.new(env)
       @verb     = @request.request_method
       @path     = @request.path_info
-      @response = { status: 200, headers: headers, body: [] }
+
+      @response = {
+        status:  200,
+        headers: headers,
+        body:    []
+      }
 
       route!
 
