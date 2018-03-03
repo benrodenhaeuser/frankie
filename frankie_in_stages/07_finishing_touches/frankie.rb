@@ -178,9 +178,9 @@ module Frankie
 
     # CHANGE: use halt method
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:pattern].match(@path) }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return unless match
 
       values = match[:pattern].match(@path).captures
@@ -202,7 +202,7 @@ module Frankie
   end
 
   # CHANGE: at_exit hook
-  at_exit { App.run! }
+  at_exit { Application.run! }
 end
 
 extend Frankie::Delegator

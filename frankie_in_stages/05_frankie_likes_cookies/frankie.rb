@@ -164,9 +164,9 @@ module Frankie
     end
 
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:pattern].match(@path) }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return unless match
 
       values = match[:pattern].match(@path).captures

@@ -82,9 +82,9 @@ module Frankie
     end
 
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:path] == @path }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return status(404) unless match
 
       # CHANGE in 0.2: `instance_eval`

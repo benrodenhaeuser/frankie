@@ -123,9 +123,9 @@ module Frankie
 
     # CHANGE in 0.4: not_found case handled separately, use throw
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:pattern].match(@path) }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return unless match
 
       values = match[:pattern].match(@path).captures

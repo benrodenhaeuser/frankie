@@ -104,9 +104,9 @@ module Frankie
 
     # CHANGE in 0.3: find block: match with pattern
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:pattern].match(@path) }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return status(404) unless match
 
       # CHANGE in 0.3: process captured groups

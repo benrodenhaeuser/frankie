@@ -5,7 +5,7 @@ module Frankie
     VERSION = 0.1
   end
 
-  class App
+  class Application
     class << self
       def call(env)
         new.call(env)
@@ -65,9 +65,9 @@ module Frankie
     end
 
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:path] == @path }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return status(404) unless match
 
       body match[:block].call

@@ -169,9 +169,9 @@ module Frankie
     end
 
     def route!
-      match = App.routes
-                 .select { |route| route[:verb] == @verb }
-                 .find   { |route| route[:pattern].match(@path) }
+      match = Application.routes
+                         .select { |route| route[:verb] == @verb }
+                         .find   { |route| route[:path] == @path }
       return unless match
 
       values = match[:pattern].match(@path).captures
@@ -192,7 +192,7 @@ module Frankie
     delegate(:use)
   end
 
-  at_exit { App.run! unless ENV['RACK_ENV'] == 'test' }
+  at_exit { Application.run! unless ENV['RACK_ENV'] == 'test' }
 end
 
 extend Frankie::Delegator

@@ -3,4 +3,4 @@
 require 'rack'
 require_relative 'app'
 
-Rack::Handler::WEBrick.run Frankie::App
+Rack::Handler::WEBrick.run Frankie::Application
