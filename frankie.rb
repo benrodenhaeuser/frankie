@@ -169,13 +169,10 @@ module Frankie
     end
 
     def route!
-      puts "got here (beginning of route)"
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
                          .find   { |route| route[:pattern].match(@path) }
       return unless match
-
-      puts "got here" # TODO
 
       values = match[:pattern].match(@path).captures
       params.merge!(match[:keys].zip(values).to_h)
