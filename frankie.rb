@@ -15,7 +15,7 @@ module Frankie
     end
   end
 
-  class App
+  class Application
     include Templates
 
     class << self
