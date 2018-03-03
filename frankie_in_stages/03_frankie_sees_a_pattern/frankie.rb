@@ -106,7 +106,7 @@ module Frankie
     def route!
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
-                         .find   { |route| route[:path] == @path }
+                         .find   { |route| route[:pattern].match(@path) }
       return status(404) unless match
 
       # CHANGE in 0.3: process captured groups

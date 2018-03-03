@@ -172,7 +172,7 @@ module Frankie
     def route!
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
-                         .find   { |route| route[:path] == @path }
+                         .find   { |route| route[:pattern].match(@path) }
       return unless match
 
       values = match[:pattern].match(@path).captures

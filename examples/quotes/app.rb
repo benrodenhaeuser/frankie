@@ -24,6 +24,7 @@ def insert(author, quote, quotes)
 end
 
 get "/" do
+  puts "got here" # did not get here :-)
   redirect "/quotes"
 end
 
