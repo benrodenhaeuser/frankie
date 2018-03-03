@@ -97,7 +97,7 @@ module Frankie
 
       # CHANGE: new method
       def run!
-        Rack::Handler::WEBrick.run Frankie::App
+        Rack::Handler::WEBrick.run Frankie::Application
       end
     end
 
