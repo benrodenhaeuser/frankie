@@ -75,5 +75,5 @@ module Frankie
   end
 end
 
-Frankie::Application.get('/') { 'frankie says hello.' }
+Frankie::Application.get('/') { 'Frankie says hello.' }
 Rack::Handler::WEBrick.run Frankie::Application
