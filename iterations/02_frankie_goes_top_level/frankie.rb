@@ -5,24 +5,7 @@ module Frankie
     VERSION = 0.2
   end
 
-  # CHANGE in 0.2: new module
-  module Templates
-    def path_to_template(app_root, template)
-      template_dir = File.expand_path('../views', app_root)
-      "#{template_dir}/#{template}.erb"
-    end
-
-    def erb(template)
-      b = binding
-      app_root = caller_locations.first.absolute_path
-      content = File.read(path_to_template(app_root, template))
-      ERB.new(content).result(b)
-    end
-  end
-
   class Application
-    include Templates
-
     class << self
       def call(env)
         new.call(env)
@@ -87,12 +70,10 @@ module Frankie
                          .find   { |route| route[:path] == @path }
       return status(404) unless match
 
-      # CHANGE in 0.2: `instance_eval`
       body instance_eval(&match[:block])
     end
   end
 
-  # CHANGE in 0.2: new module
   module Delegator
     def self.delegate(method_name)
       define_method(method_name) do |*args, &block|
@@ -105,5 +86,11 @@ module Frankie
   end
 end
 
-# CHANGE in 0.2: add `delegate` to main object
 extend Frankie::Delegator
+
+get('/ditty') do
+  status 301
+  'Go look elsewhere'
+end
+
+Rack::Handler::WEBrick.run Frankie::Application
