@@ -48,10 +48,6 @@ module Frankie
       @response.values
     end
 
-    def params
-      @request.params
-    end
-
     def status(code)
       @response[:status] = code
     end

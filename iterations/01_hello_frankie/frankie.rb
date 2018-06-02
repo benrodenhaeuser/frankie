@@ -48,10 +48,6 @@ module Frankie
       @response.values
     end
 
-    def params
-      @request.params
-    end
-
     def status(code)
       @response[:status] = code
     end
@@ -76,4 +72,5 @@ module Frankie
 end
 
 Frankie::Application.get('/') { 'Frankie says hello.' }
+
 Rack::Handler::WEBrick.run Frankie::Application

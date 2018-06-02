@@ -5,23 +5,7 @@ module Frankie
     VERSION = 0.3
   end
 
-  module Templates
-    def path_to_template(app_root, template)
-      template_dir = File.expand_path('../views', app_root)
-      "#{template_dir}/#{template}.erb"
-    end
-
-    def erb(template)
-      b = binding
-      app_root = caller_locations.first.absolute_path
-      content = File.read(path_to_template(app_root, template))
-      ERB.new(content).result(b)
-    end
-  end
-
   class Application
-    include Templates
-
     class << self
       def call(env)
         new.call(env)
@@ -39,7 +23,6 @@ module Frankie
         route('POST', path, block)
       end
 
-      # CHANGE in 0.3: pattern and keys
       def route(verb, path, block)
         pattern, keys = compile(path)
 
@@ -51,7 +34,6 @@ module Frankie
         }
       end
 
-      # CHANGE in 0.3: new method
       def compile(path)
         segments = path.split('/', -1)
         keys = []
@@ -66,6 +48,7 @@ module Frankie
         end
 
         pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
+        p [pattern, keys] # TODO debug
         [pattern, keys]
       end
     end
@@ -102,15 +85,14 @@ module Frankie
       @response[:body] = [string]
     end
 
-    # CHANGE in 0.3: find block: match with pattern
     def route!
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
                          .find   { |route| route[:pattern].match(@path) }
       return status(404) unless match
 
-      # CHANGE in 0.3: process captured groups
       values = match[:pattern].match(@path).captures
+      p values
       params.merge!(match[:keys].zip(values).to_h)
       body(instance_eval(&match[:block]))
     end
@@ -129,3 +111,9 @@ module Frankie
 end
 
 extend Frankie::Delegator
+
+get '/albums/:album/songs/:song' do
+  "My favourite song is '#{params['song']}' from '#{params['album']}'."
+end
+
+Rack::Handler::WEBrick.run Frankie::Application
