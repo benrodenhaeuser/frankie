@@ -2,7 +2,7 @@ require 'rack'
 
 module Frankie
   module BookKeeping
-    VERSION = 0.5
+    VERSION = 0.4
   end
 
   class Application
@@ -147,4 +147,19 @@ end
 
 extend Frankie::Delegator
 
-# TODO: add a "test"
+use Rack::Session::Cookie, :key => 'rack.session', :secret => "secret"
+
+get '/set_message' do
+  session[:message] = "Hello, there."
+  "Message has been set."
+end
+
+get '/get_message' do
+  if session[:message]
+    "Your message: " + session.delete(:message)
+  else
+    "There is no message."
+  end
+end
+
+Rack::Handler::WEBrick.run Frankie::Application
