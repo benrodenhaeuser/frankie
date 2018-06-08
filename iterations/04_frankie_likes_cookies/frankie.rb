@@ -5,44 +5,23 @@ module Frankie
     VERSION = 0.5
   end
 
-  module Templates
-    def path_to_template(app_root, template)
-      template_dir = File.expand_path('../views', app_root)
-      "#{template_dir}/#{template}.erb"
-    end
-
-    def erb(template)
-      b = binding
-      app_root = caller_locations.first.absolute_path
-      content = File.read(path_to_template(app_root, template))
-      ERB.new(content).result(b)
-    end
-  end
-
   class Application
-    include Templates
-
     class << self
-      # CHANGE: changed method
       def call(env)
         prototype.call(env)
       end
 
-      # CHANGE: new method
       def prototype
         @prototype ||= new
       end
 
-      # CHANGE: new alias
       alias new! new
 
-      # CHANGE: new/overridden method
       def new
         instance = new!
         build(instance).to_app
       end
 
-      # CHANGE: new method
       def build(app)
         builder = Rack::Builder.new
 
@@ -56,7 +35,6 @@ module Frankie
         builder
       end
 
-      # CHANGE: new method
       def use(middleware, *args)
         (@middleware ||= []) << [middleware, args]
       end
@@ -102,12 +80,10 @@ module Frankie
       end
     end
 
-    # CHANGE: new method
     def call(env)
       dup.call!(env)
     end
 
-    # CHANGE: this method used to be called `call`
     def call!(env)
       @request  = Rack::Request.new(env)
       @verb     = @request.request_method
@@ -119,7 +95,7 @@ module Frankie
         body:    []
       }
 
-      catch(:halt) { dispatch! }
+      route!
 
       @response.values
     end
@@ -128,7 +104,6 @@ module Frankie
       @request.params
     end
 
-    # CHANGE: new method
     def session
       @request.session
     end
@@ -145,33 +120,15 @@ module Frankie
       @response[:status] = code
     end
 
-    def dispatch!
-      route!
-      not_found
-    end
-
-    def redirect(uri)
-      status (@verb == 'GET' ? 302 : 303)
-      headers['Location'] = uri
-      throw :halt
-    end
-
-    def not_found
-      status 404
-      body "<h1>404 Not Found</h1"
-      throw :halt
-    end
-
     def route!
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
                          .find   { |route| route[:pattern].match(@path) }
-      return unless match
+      return status(404) unless match
 
       values = match[:pattern].match(@path).captures
       params.merge!(match[:keys].zip(values).to_h)
-      body(instance_eval(&match[:block]))
-      throw :halt
+      body instance_eval(&match[:block])
     end
   end
 
@@ -184,9 +141,10 @@ module Frankie
 
     delegate(:get)
     delegate(:post)
-    # CHANGE: new invocation:
     delegate(:use)
   end
 end
 
 extend Frankie::Delegator
+
+# TODO: add a "test"
