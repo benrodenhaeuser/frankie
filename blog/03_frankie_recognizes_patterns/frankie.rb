@@ -2,41 +2,13 @@ require 'rack'
 
 module Frankie
   module BookKeeping
-    VERSION = 0.4
+    VERSION = 0.3
   end
 
   class Application
     class << self
       def call(env)
-        prototype.call(env)
-      end
-
-      def prototype
-        @prototype ||= new
-      end
-
-      alias new! new
-
-      def new
-        instance = new!
-        build(instance).to_app
-      end
-
-      def build(app)
-        builder = Rack::Builder.new
-
-        if @middleware
-          @middleware.each do |middleware, args|
-            builder.use(middleware, *args)
-          end
-        end
-
-        builder.run app
-        builder
-      end
-
-      def use(middleware, *args)
-        (@middleware ||= []) << [middleware, args]
+        new.call(env)
       end
 
       def routes
@@ -76,15 +48,12 @@ module Frankie
         end
 
         pattern = Regexp.compile("\\A#{segments.join('/')}\\z")
+        p [pattern, keys] # TODO debug
         [pattern, keys]
       end
     end
 
     def call(env)
-      dup.call!(env)
-    end
-
-    def call!(env)
       @request  = Rack::Request.new(env)
       @verb     = @request.request_method
       @path     = @request.path_info
@@ -104,20 +73,16 @@ module Frankie
       @request.params
     end
 
-    def session
-      @request.session
-    end
-
-    def body(string)
-      @response[:body] = [string]
+    def status(code)
+      @response[:status] = code
     end
 
     def headers
       @headers ||= { 'Content-Type' => 'text/html' }
     end
 
-    def status(code)
-      @response[:status] = code
+    def body(string)
+      @response[:body] = [string]
     end
 
     def route!
@@ -127,8 +92,9 @@ module Frankie
       return status(404) unless match
 
       values = match[:pattern].match(@path).captures
+      p values
       params.merge!(match[:keys].zip(values).to_h)
-      body instance_eval(&match[:block])
+      body(instance_eval(&match[:block]))
     end
   end
 
@@ -141,25 +107,15 @@ module Frankie
 
     delegate(:get)
     delegate(:post)
-    delegate(:use)
   end
 end
 
 extend Frankie::Delegator
 
-use Rack::Session::Cookie, :key => 'rack.session', :secret => "secret"
+# example:
 
-get '/set_message' do
-  session[:message] = "Hello, there."
-  "Message has been set."
-end
-
-get '/get_message' do
-  if session[:message]
-    "Your message: " + session.delete(:message)
-  else
-    "There is no message."
-  end
+get '/albums/:album/songs/:song' do
+  "My favourite song is '#{params['song']}' from '#{params['album']}'."
 end
 
 Rack::Handler::WEBrick.run Frankie::Application

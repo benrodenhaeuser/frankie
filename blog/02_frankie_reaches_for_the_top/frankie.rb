@@ -2,7 +2,7 @@ require 'rack'
 
 module Frankie
   module BookKeeping
-    VERSION = 0.1
+    VERSION = 0.2
   end
 
   class Application
@@ -66,11 +66,29 @@ module Frankie
                          .find   { |route| route[:path] == @path }
       return status(404) unless match
 
-      body match[:block].call
+      body instance_eval(&match[:block])
     end
+  end
+
+  module Delegator
+    def self.delegate(method_name)
+      define_method(method_name) do |*args, &block|
+        Application.send(method_name, *args, &block)
+      end
+    end
+
+    delegate(:get)
+    delegate(:post)
   end
 end
 
-Frankie::Application.get('/') { 'Frankie says hello.' }
+extend Frankie::Delegator
+
+# example:
+
+get('/ditty') do
+  status 301
+  'Go look elsewhere'
+end
 
 Rack::Handler::WEBrick.run Frankie::Application

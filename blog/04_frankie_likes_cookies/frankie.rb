@@ -2,26 +2,10 @@ require 'rack'
 
 module Frankie
   module BookKeeping
-    VERSION = 0.6
-  end
-
-  module Templates
-    def path_to_template(app_root, template)
-      template_dir = File.expand_path('../views', app_root)
-      "#{template_dir}/#{template}.erb"
-    end
-
-    def erb(template)
-      b = binding
-      app_root = caller_locations.first.absolute_path
-      content = File.read(path_to_template(app_root, template))
-      ERB.new(content).result(b)
-    end
+    VERSION = 0.4
   end
 
   class Application
-    include Templates
-
     class << self
       def call(env)
         prototype.call(env)
@@ -111,8 +95,7 @@ module Frankie
         body:    []
       }
 
-      # CHANGE: we use invoke now
-      invoke { dispatch! }
+      route!
 
       @response.values
     end
@@ -137,47 +120,15 @@ module Frankie
       @response[:status] = code
     end
 
-    # CHANGE: new method
-    def invoke
-      caught = catch(:halt) { yield }
-      return unless caught
-
-      case caught
-      when Integer then status caught
-      when String then body caught
-      else
-        body(*caught.pop)
-        status caught.shift
-        headers.merge!(*caught)
-      end
-    end
-
-    def dispatch!
-      route!
-      not_found
-    end
-
-    def redirect(uri)
-      status (@verb == 'GET' ? 302 : 303)
-      headers['Location'] = uri
-      throw :halt
-    end
-
-    def not_found
-      status 404
-      body "<h1>404 Not Found</h1"
-      throw :halt
-    end
-
     def route!
       match = Application.routes
                          .select { |route| route[:verb] == @verb }
                          .find   { |route| route[:pattern].match(@path) }
-      return unless match
+      return status(404) unless match
 
       values = match[:pattern].match(@path).captures
       params.merge!(match[:keys].zip(values).to_h)
-      throw :halt, instance_eval(&match[:block])
+      body instance_eval(&match[:block])
     end
   end
 
@@ -195,3 +146,22 @@ module Frankie
 end
 
 extend Frankie::Delegator
+
+# example:
+
+use Rack::Session::Cookie, :key => 'rack.session', :secret => "secret"
+
+get '/set_message' do
+  session[:message] = "Hello, there."
+  "Message has been set."
+end
+
+get '/get_message' do
+  if session[:message]
+    "Your message: " + session.delete(:message)
+  else
+    "There is no message."
+  end
+end
+
+Rack::Handler::WEBrick.run Frankie::Application
