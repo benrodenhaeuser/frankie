@@ -88,7 +88,7 @@ extend Frankie::Delegator
 
 get('/ditty') do
   status 301
-  'Go look elsewhere'
+  'Moved permanenly.'
 end
 
 Rack::Handler::WEBrick.run Frankie::Application
